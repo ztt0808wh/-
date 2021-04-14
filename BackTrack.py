@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import random
+import math
 import time
 
 number = 30
@@ -9,23 +11,6 @@ weight = [508,1021,1321,111,1098,1196,204,939,1107,399,474,719,803,1054,1781,
 profit = [408,921,1329,11,998,1009,104,839,943,299,374,673,703,954,1657,
           425,950,1375,430,541,971,332,483,815,654,706,1360,956,992,1948]
 
-plt.figure(figsize=(8, 6), dpi=80)
-plt.scatter(weight, profit, s=20)
-plt.xlabel("Weight", fontsize=12, color="r")
-plt.ylabel("Profit", fontsize=12, color='r')
-plt.show()
-
-w_np = np.array(weight)
-p_np = np.array(profit)
-ratio = p_np / w_np
-print("价值与重量之比：")
-for a in ratio:
-    print(format(a, '.3f'), end=" ")
-
-print("\n\n非递增排序后：")
-res = sorted(ratio, reverse=True)
-for b in res:
-    print(format(b, '.3f'), end=" ")
 
 class onezerobag:
     def __init__(self, w, v, c):
@@ -69,14 +54,7 @@ class onezerobag:
         which.reverse()
         return which, values[values.shape[0]-1, values.shape[1]-1]
 
-question = onezerobag(weight, profit, capacity)
-x = question.load_which(question.dynamic_programming())
-print("\n\n***动态规划算法***")
-print("最优解序号为：")
-for i in x[0]:
-    print(i, end=" ")
-a = x[1]
-print("\n最大价值为：", a)
+
 
 class backTrackingMethod:
     def __init__(self, w, v, c, cw, cp, bestp):
@@ -148,16 +126,81 @@ class backTrackingMethod:
             self.back_tracking(i+1, visit)
         return visit, self.bestp
 
-visit = np.zeros(number)
-question = backTrackingMethod(weight, profit, capacity, cw = 0, cp = 0 ,bestp=0)
-weight, profit, index = question.value_per()
-visit, best = question.back_tracking(0, visit)
-list = []
-for i in range(visit.size):
-    if(visit[i] != 0):
-        list.append(index[i]+1)
-print("\n\n***回溯算法***")
-print("最优解序号为：")
-for a in sorted(list):
-    print(a, end=" ")
-print("\n最大价值为：", best)
+
+
+#### 用户选择解决0-1背包问题的方法
+print('请选择解决的方法：')
+print('选择动态规划解决请按‘1’：')
+print('选择回溯法解决请按‘2’：')
+print('请输入你的选项：')
+x=input()
+if x=='1':
+    data = open("result.txt", "w")  # 创建保存结果文件
+    data.write('\n背包中所装物品为:')  # 写入文件
+    start = time.time()
+    question1 = onezerobag(weight, profit, capacity)
+    x = question1.load_which(question1.dynamic_programming())
+    end = time.time()
+    print("\n\n***动态规划算法***")
+    print("最优解序号为：")
+    for i in x[0]:
+        print('第',i,'个', end=" ")
+        s=str(i) + ' '
+        data.write(s)
+    a = x[1]
+    print("\n最大价值为：", a)
+    print("\n循环运行时间:%.2f秒" % (end - start))
+
+    # 任意一组D{0-1} KP数据的最优解、求解时间和解向量可保存为txt文件或导出EXCEL文件。
+    data.write("\n循环运行时间:")
+    data.write(str(end - start))
+    data.write("秒")
+    data.close()
+elif x=='2':
+    data = open("result.txt", "w")  # 创建保存结果文件
+    data.write('\n背包中所装物品为:')  # 写入文件
+    visit = np.zeros(number)
+    start = time.time()
+    question = backTrackingMethod(weight, profit, capacity, cw = 0, cp = 0 ,bestp=0)
+    weight, profit, index = question.value_per()
+    visit, best = question.back_tracking(0, visit)
+    end = time.time()
+    print("\n循环运行时间:%.2f秒" % (end - start))
+    list = []
+    for i in range(visit.size):
+        if(visit[i] != 0):
+            list.append(index[i]+1)
+    print("\n\n***回溯算法***")
+    print("最优解序号为：")
+    for a in sorted(list):
+        print('第', a, '个', end=" ")
+        s = str(i) + ' '
+        data.write(s)
+    print("\n最大价值为：", best)
+    # 任意一组D{0-1} KP数据的最优解、求解时间和解向量可保存为txt文件或导出EXCEL文件。
+    data.write("\n循环运行时间:")
+    data.write(str(end - start))
+    data.write("秒")
+    data.close()
+else:
+    print("输入错误！")
+
+#按性价比进行非递增排序
+w_np = np.array(weight)
+p_np = np.array(profit)
+ratio = p_np / w_np
+print("价值与重量之比：")
+for a in ratio:
+    print(format(a, '.3f'), end=" ")
+
+print("\n\n非递增排序后：")
+res = sorted(ratio, reverse=True)
+for b in res:
+    print(format(b, '.3f'), end=" ")
+
+#绘制散点图
+plt.figure(figsize=(8, 6), dpi=80)
+plt.scatter(weight, profit, s=20)
+plt.xlabel("Weight", fontsize=12, color="r")
+plt.ylabel("Profit", fontsize=12, color='r')
+plt.show()
